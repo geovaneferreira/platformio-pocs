@@ -55,6 +55,9 @@ public:
   virtual int peek();
   virtual void flush();
 
+   int getSpreadingFactor();
+  long getSignalBandwidth();
+
 #ifndef ARDUINO_SAMD_MKRWAN1300
   void onReceive(void(*callback)(int));
 
@@ -96,8 +99,7 @@ private:
   void handleDio0Rise();
   bool isTransmitting();
 
-  int getSpreadingFactor();
-  long getSignalBandwidth();
+ 
 
   void setLdoFlag();
 
