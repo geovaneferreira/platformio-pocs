@@ -11,13 +11,13 @@ void setFlag(void);
 // Modem Lora SX1276 -> Using in TGO Lora PCI
 //------------
 #define transmit_pck 0
-#define TYPE_MODEM_LORA SX1262
+#define TYPE_MODEM_LORA 1262
 
-#if TYPE_MODEM_LORA == SX1262
+#if TYPE_MODEM_LORA == 1262
   #define RADIO_RXEN 27
   #define RADIO_TXEN 26
 
-  #define hasOled 1
+  #define hasOled 0
   #define SCK     18//5    // GPIO5  -- SX1278's SCK
   #define MISO    19//19   // GPIO19 -- SX1278's MISO
   #define MOSI    23//27   // GPIO27 -- SX1278's MOSI
@@ -30,7 +30,7 @@ void setFlag(void);
   #if hasOled == 1
     SSD1306 display(0x3c, 33, 32);
   #endif
-#elif TYPE_MODEM_LORA == SX1276
+#elif TYPE_MODEM_LORA == 1276
   #define hasOled 1
   #define SCK     5    // GPIO5  -- SX1278's SCK
   #define MISO    19   // GPIO19 -- SX1278's MISO
@@ -42,7 +42,7 @@ void setFlag(void);
     SSD1306 display(0x3c, 4, 15);
   #endif
   String MODEM_LORA  = "SX1276";
-  SX1276 radio = new Module(NSS, DI0, RST, BUSY, SPI);
+  SX1276 radio = new Module(NSS, DI0, RST, 3, SPI);
 #endif
 
 void setup() {
@@ -60,10 +60,10 @@ void setup() {
   SPI.begin(SCK, MISO, MOSI, NSS);
   Serial.println("[" + MODEM_LORA + "] Initializing ... ");
 
-  #if TYPE_MODEM_LORA == SX1262
-    int state  = radio.begin(434.0, 125.0, 9, 7, SX126X_SYNC_WORD_PRIVATE, 10, 8, 0);  
-  #elif TYPE_MODEM_LORA == SX1276
-    int state  = radio.begin();
+  #if TYPE_MODEM_LORA == 1262
+    int state  = radio.begin(433.0, 125.0, 7, 5, SX126X_SYNC_WORD_PRIVATE, 10, 8, 0);  
+  #elif TYPE_MODEM_LORA == 1276
+    int state  = radio.begin();   
   #endif  
   radio.reset();
   
@@ -76,10 +76,10 @@ void setup() {
   }
 
   #if transmit_pck == 0
-  #if TYPE_MODEM_LORA == SX1262
+  #if TYPE_MODEM_LORA == 1262
     radio.setRfSwitchPins(RADIO_RXEN, RADIO_TXEN);
     radio.setDio1Action(setFlag);
-  #elif TYPE_MODEM_LORA == SX1276
+  #elif TYPE_MODEM_LORA == 1276
     radio.setDio0Action(setFlag);
   #endif  
   // start listening for LoRa packets
