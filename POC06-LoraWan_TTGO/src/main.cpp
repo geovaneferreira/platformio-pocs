@@ -57,7 +57,7 @@ static const u1_t PROGMEM APPSKEY[16] =  application_session_key; //coloque aqui
 static const u4_t DEVADDR = dev_addr;
 
 /* - Tempo entre envios de pacotes LoRa */
-const unsigned TX_INTERVAL = 20; //1800s = 30 minutos 
+const unsigned TX_INTERVAL = 30; //1800s = 30 minutos 
 /* Variáveis e objetos globais */
 static osjob_t sendjob; //objeto para job de envio de dados via ABP
 /* Callbacks para uso cpm OTAA apenas (por este projeto usar ABP, isso, eles estão vazios) */
@@ -173,7 +173,7 @@ void do_send(osjob_t* j) /*-----------------------------------------------------
     int numero_aleatorio = (int)random(100);
 
     /* Formata dado a ser enviado (número aleatório de 0 a 99) */   
-    sprintf(mydata_str, "GEOVANE %02d", numero_aleatorio);  
+    sprintf(mydata_str, "GE %02d", numero_aleatorio);  
     memcpy(mydata, (uint8_t *)&mydata_str, strlen(mydata_str)); 
     
     /* Verifica se já há um envio sendo feito.

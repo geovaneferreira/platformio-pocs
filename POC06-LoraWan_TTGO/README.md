@@ -3,7 +3,7 @@
 This project uses:
 1. TTGO Lora Oled     -> SX1276
 
-The purpose of this is to send via LoraWan packages containing 10 bytes, containing my name "GEOVANE " followed by a random two-digit number.
+The purpose of this is to send via LoraWan packages containing 5 bytes, containing "GE " followed by a random two-digit number.
 
 The settings in this project are for ATC's LoraWan network using the Everynet platform in Brazil.
 
