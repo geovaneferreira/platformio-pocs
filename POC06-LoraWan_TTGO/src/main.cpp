@@ -92,6 +92,8 @@ void onEvent (ev_t ev) /*-------------------------------------------------------
             Serial.println(F("EV_BEACON_TRACKED"));
             break;
         case EV_JOINING:
+            LMIC_setLinkCheckMode(1);
+            LMIC_setAdrMode(1);
             Serial.println(F("EV_JOINING"));
             break;
         case EV_JOINED:

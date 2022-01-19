@@ -1194,6 +1194,17 @@ static bit_t decodeFrame (void) {
     if (dlen > 0)
         LMICOS_logEventUint32("decodeFrame", (dlen << 8) | (hdr << 0));
 
+    LMIC_DEBUG_PRINTF("%"LMIC_PRId_ostime_t" dlen=%d, hdr=%d\n", os_getTime(), dlen, hdr);
+
+    for(int i=0;i<dlen;i++){
+        if(d[i] > 0xF)
+            printf("%x", d[i]);
+        else
+            printf("0%x", d[i]);    
+    }
+        
+    printf("\n");
+
     if( dlen < OFF_DAT_OPTS+4 ||
         (hdr & HDR_MAJOR) != HDR_MAJOR_V1 ||
         (ftype != HDR_FTYPE_DADN  &&  ftype != HDR_FTYPE_DCDN) ) {
@@ -1226,6 +1237,7 @@ static bit_t decodeFrame (void) {
                             e_.eui    = MAIN::CDEV->getEui(),
                             e_.info   = addr,
                             e_.info2  = LMIC.devaddr));
+        printf("E 1 = wrong address %x,%x\n",addr,LMIC.devaddr);
         goto norx;
     }
     if( poff > pend ) {
@@ -1233,6 +1245,7 @@ static bit_t decodeFrame (void) {
         EV(specCond, ERR, (e_.reason = EV::specCond_t::CORRUPTED_FRAME,
                            e_.eui    = MAIN::CDEV->getEui(),
                            e_.info   = 0x1000000 + (poff-pend) + (fct<<8) + (dlen<<16)));
+        printf("E 2\n");
         goto norx;
     }
 
@@ -1262,6 +1275,7 @@ static bit_t decodeFrame (void) {
                            e_.info1  = Base::lsbf4(&d[pend]),
                            e_.info2  = seqno,
                            e_.info3  = LMIC.devaddr));
+        printf("E 3\n");
         goto norx;
     }
     if( seqno < LMIC.seqnoDn ) {
@@ -1271,6 +1285,7 @@ static bit_t decodeFrame (void) {
                                 e_.info   = LMIC.seqnoDn,
                                 e_.info2  = seqno));
             LMICOS_logEventUint32("decodeFrame: rollover discarded", ((u4_t)seqno << 16) | (LMIC.lastDnConf << 8) | (ftype << 0));
+             printf("E 4\n");
             goto norx;
         }
         if( seqno != LMIC.seqnoDn-1 || !LMIC.lastDnConf || ftype != HDR_FTYPE_DCDN ) {
@@ -1279,6 +1294,7 @@ static bit_t decodeFrame (void) {
                                 e_.info   = LMIC.seqnoDn,
                                 e_.info2  = seqno));
             LMICOS_logEventUint32("decodeFrame: Retransmit confimed discarded", ((u4_t)seqno << 16) | (LMIC.lastDnConf << 8) | (ftype << 0));
+             printf("E 5\n");
             goto norx;
         }
         // Replay of previous sequence number allowed only if
@@ -1291,6 +1307,7 @@ static bit_t decodeFrame (void) {
     else {
         if( seqnoDiff > LMICbandplan_MAX_FCNT_GAP) {
             LMICOS_logEventUint32("decodeFrame: gap too big", ((u4_t)seqnoDiff << 16) | (seqno & 0xFFFFu));
+            printf("E 6\n");
             goto norx;
         }
         if( seqno > LMIC.seqnoDn ) {
@@ -1313,6 +1330,7 @@ static bit_t decodeFrame (void) {
 #if LMIC_DEBUG_LEVEL > 0
         LMIC_DEBUG_PRINTF("%"LMIC_PRId_ostime_t": port==0 && FOptsLen=%#x: discard\n", os_getTime(), olen);
 #endif
+        printf("E 7\n");
         goto norx;
     }
 
@@ -1390,6 +1408,7 @@ static bit_t decodeFrame (void) {
                             e_.info2  = seqno));
         // discard the data
         LMICOS_logEventUint32("decodeFrame: discarding replay", ((u4_t)seqno << 16) | (LMIC.lastDnConf << 8) | (ftype << 0));
+        printf("E 8\n");
         goto norx;
     }
 
@@ -1533,6 +1552,9 @@ static void schedRx12 (ostime_t delay, osjobcb_t func, u1_t dr) {
 static void setupRx1 (osjobcb_t func) {
     initTxrxFlags(__func__, TXRX_DNW1);
     // Turn LMIC.rps from TX over to RX
+    //LMIC.rps = dndr2rps(LMIC.dn2Dr);
+    //LMIC.freq = LMIC.dn2Freq;
+    
     LMIC.rps = setNocrc(LMIC.rps,1);
     LMIC.dataLen = 0;
     LMIC.osjob.func = func;
