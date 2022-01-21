@@ -3,9 +3,9 @@
 
 
 //ABP Credentials 
-const char *devAddr = "47020db5";
-const char *nwkSKey = "7694a9fa668b59676a14fc03ba9b960c";
-const char *appSKey = "66e458d609e77eea04627a4d94141d37";
+const char *devAddr = "00000000";
+const char *nwkSKey = "00000000000000000000000000000000";
+const char *appSKey = "00000000000000000000000000000000";
 
 const unsigned long interval = 10000;    // 10 s interval to send message
 unsigned long previousMillis = 0;  // will store last time message sent
