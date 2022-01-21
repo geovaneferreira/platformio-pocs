@@ -30,7 +30,7 @@ NETWORK SESSION ENCRYPION KEY: Gerar aleatoriamente o valor
 /* Definições gerais */
 #define BAUDRATE_SERIAL_DEBUG   9600
 /* Definições do rádio LoRa (SX1276) */
-#define GANHO_LORA_DBM          20 //dBm
+#define GANHO_LORA_DBM          30 //dBm
 /*Pinout - Heltec Lora V1*/
 #define RADIO_RESET_PORT        14
 #define RADIO_MOSI_PORT         27
@@ -92,8 +92,6 @@ void onEvent (ev_t ev) /*-------------------------------------------------------
             Serial.println(F("EV_BEACON_TRACKED"));
             break;
         case EV_JOINING:
-            LMIC_setLinkCheckMode(1);
-            LMIC_setAdrMode(1);
             Serial.println(F("EV_JOINING"));
             break;
         case EV_JOINED:
@@ -219,6 +217,9 @@ void setup() /*-----------------------------------------------------------------
     for (b=0; b<8; ++b) 
         LMIC_disableSubBand(b);
 
+    // for(b=8; b<72;b++)
+    //     LMIC_disableChannel(b);
+
     LMIC_enableChannel(0); // 915.2 MHz
     LMIC_enableChannel(1); // 915.4 MHz
     LMIC_enableChannel(2); // 915.6 MHz
@@ -228,12 +229,13 @@ void setup() /*-----------------------------------------------------------------
     LMIC_enableChannel(6); // 916.4 MHz
     LMIC_enableChannel(7); // 916.6 MHz
 
-    LMIC_setAdrMode(0);
-    LMIC_setLinkCheckMode(0);
+    LMIC_setAdrMode (0);
+    LMIC_setLinkCheckMode(0);   
 
     /* Data rate para janela de recepção RX2 */
     LMIC.dn2Dr = DR_SF12CR;
-
+    // LMIC.rxDelay = 3;
+    // LMIC_setClockError(MAX_CLOCK_ERROR * 10 / 100);
     /* Configura data rate de transmissão e ganho do rádio
        LoRa (dBm) na transmissão */
     LMIC_setDrTxpow(DR_SF12, GANHO_LORA_DBM);
